@@ -1,270 +1,237 @@
-# Gemini Canvas Image Studio V3
-## Product-Based Image-to-Image
+# Gemini Canvas Image Studio V4
+## Text-to-Image
 
 ## Role
 
 Act as a senior frontend engineer, product designer, and Gemini Canvas application builder.
 
-Build **Gemini Canvas Image Studio**, an interactive product-based image-to-image application that runs directly inside Gemini Canvas.
+Build **Gemini Canvas Image Studio**, an interactive text-to-image creation application that runs directly inside Gemini Canvas.
 
-The application uses a Supabase Edge Function as its read-only product catalog source. Users select a product and one of its color variants; the selected variant's `image_link` becomes the reference image for image-to-image generation using only a genuinely available native Gemini Canvas capability.
+Users describe an image in a text prompt, optionally configure supported style and aspect-ratio settings, and generate an image using only a genuinely available native Gemini Canvas capability.
 
-## 1. Locked Product Requirements
+## 1. Core Product Requirements
 
-These decisions are mandatory:
+The application must allow users to:
 
-- **Reference image source:** `variant_colors[].image_link` only.
-- **Size variants:** `variant_size` is informational only; display available size and price information, but do not require a size selection and do not use it to choose the reference image.
-- **Manual upload:** remove the image upload/file-picker workflow entirely. Users cannot upload their own reference image.
-- **Catalog source:** Supabase Edge Function below is the source of truth for product catalog data.
-- **Generation:** use only image-generation or image-editing capabilities genuinely exposed by the Gemini Canvas runtime.
-- **No external generation API, API key, paid API account, or additional backend.**
+1. Enter and edit a text prompt describing the image they want to create.
+2. Optionally choose a visual style preset.
+3. Optionally choose an output aspect ratio when supported.
+4. Generate an image using a native image-generation capability genuinely exposed by Gemini Canvas at runtime.
+5. Preview the actual generated result.
+6. Download a successful result when supported by the runtime.
+7. Review prior successful generations in the active session when session storage permits.
 
-Do not reinterpret or weaken these locked requirements.
+Primary workflow:
 
-## 2. Supabase Product Catalog
+**Write Prompt → Configure Optional Settings → Generate with Canvas-native Gemini Capability → Preview Result → Download / Review History**
 
-Fetch the catalog with an HTTP GET request from:
+This is a **Text-to-Image** application. It must not request, upload, fetch, select, or use a source/reference image.
 
-```text
-https://zyiavfljweavoxyyplxj.supabase.co/functions/v1/get-trx-products
-```
+## 2. Explicitly Removed Features and Integrations
 
-Requirements:
+The following are out of scope and must not be implemented:
 
-- Load the catalog when the application starts.
-- Treat the endpoint as read-only. Never create, update, or delete catalog data.
-- Do not hardcode a product catalog as the primary data source.
-- Handle network errors, non-success HTTP responses, empty responses, malformed JSON, and unexpected data shapes.
-- Validate data before rendering it. Do not silently invent missing product fields or variants.
-- Do not assume authentication headers, query parameters, or undocumented API behavior. Use only what is verified or explicitly provided.
-- Do not log secrets or expose credentials. No API key is specified or required by this prompt.
+- Supabase, including Supabase Edge Functions.
+- The endpoint `https://zyiavfljweavoxyyplxj.supabase.co/functions/v1/get-trx-products`.
+- Product catalog, product type, product group, product selector, and product metadata.
+- Color variants, size variants, and price information.
+- Reference image, source image, image-to-image, and image-editing workflows.
+- Manual image upload, file picker, drag-and-drop image input, and image URL input.
+- Supabase Storage or any other external image storage.
+- Any external backend or server added for image generation.
 
-### Expected data model
+Do not retain hidden or unused UI, services, state, types, dependencies, or instructions for these removed features.
 
-The following model is based on the supplied example and must be checked against the actual API response before implementation. Treat fields not confirmed by the live response as optional or unknown rather than assuming they always exist.
-
-```ts
-type ProductCatalog = Array<{
-  product_type: string;
-  count?: number;
-  item_groups: Array<{
-    item_group_id: string;
-    count?: number;
-    products: Array<{
-      id?: string;
-      title: string;
-      description?: string;
-      variant_size?: Array<{
-        size?: string;
-        price?: number | string;
-        sale_price?: number | string;
-      }>;
-      variant_colors: Array<{
-        color: string;
-        image_link: string;
-      }>;
-    }>;
-  }>;
-}>;
-```
-
-Important:
-- The supplied sample may be incomplete. Inspect the actual response and adapt parsing to the verified shape.
-- Do not assume that `count` is authoritative; derive displayed item counts from actual arrays when appropriate.
-- Preserve the hierarchy: `product_type` → `item_groups` → `products`.
-- Each product's color variants are the source of selectable reference images.
-
-## 3. Product Selection Workflow
-
-The primary workflow is:
-
-**Load Supabase Catalog → Select Product Type → Select Product Group → Select Product → Select Color Variant → Load Reference Image → Write Prompt → Generate → Preview Result**
-
-Implement the following selection behavior:
-
-1. Fetch and validate the catalog.
-2. Display available `product_type` values.
-3. After a product type is selected, show its `item_groups`.
-4. After a group is selected, show its products.
-5. After a product is selected, show its title, description, available size/price information, and color variants.
-6. Require the user to select a color variant before generation.
-7. Use only the selected variant's `image_link` as the active reference image.
-8. When the selected product or color changes, update the active reference image and clear or invalidate any stale selection/result state as appropriate.
-9. Ensure the generation request always corresponds to the currently selected product and color. Never use a stale image from a previous selection.
-
-Provide clear selected states and useful empty states at every selection level.
-
-## 4. Reference Image Rules
-
-The reference image must come exclusively from:
-
-```ts
-selectedVariant.image_link
-```
-
-Mandatory rules:
-
-- Do not use `additional_image_link`, even if it exists in the API response.
-- Do not use product thumbnails, unrelated images, or fallback stock images as generation references.
-- Load and preview the selected image before enabling generation.
-- Validate that the URL is a usable image URL and handle load failures.
-- If the selected image fails to load, show an error and prevent generation.
-- Changing the color variant must load the newly selected variant's `image_link`.
-- Do not silently substitute another variant or product image.
-- Keep the displayed reference preview and generation input synchronized.
-
-The URL may point to Cloudinary or another image host. Do not assume host-specific behavior unless verified.
-
-## 5. Size and Price Information
-
-Display `variant_size` as product information only.
-
-- Show the available size and its associated `price` and `sale_price` when present.
-- Do not require users to select a size.
-- Do not use size or price to determine the reference image.
-- Handle missing or incomplete size/price fields gracefully.
-- Do not calculate or invent prices that are not present in the API data.
-
-## 6. Prompt and Image Generation
-
-Provide a prompt editor where users describe the desired transformation of the selected product reference image.
-
-Optional controls may include style presets and aspect ratio choices, but only apply settings that the native generation capability actually supports.
-
-### Generation flow
-
-1. Confirm that a product is selected.
-2. Confirm that a color variant is selected.
-3. Confirm that the selected variant's reference image loaded successfully.
-4. Confirm that the prompt is non-empty.
-5. Check whether a supported native Gemini Canvas image-generation capability is genuinely available to the application at runtime.
-6. Pass the selected reference image and user prompt using the actual documented runtime input format.
-7. Apply optional settings only if the capability supports them.
-8. Display a result only after a real successful generation response.
-
-### Internal generation contract
-
-The application may use an internal adapter contract similar to:
-
-```ts
-type ImageGenerationInput = {
-  referenceImage: string;
-  productTitle: string;
-  productDescription?: string;
-  selectedColor: string;
-  prompt: string;
-};
-```
-
-This is an application-level data contract only. It is **not** a claim that Gemini Canvas accepts this exact payload. Map it to the actual supported runtime interface only after verifying that interface.
-
-## 7. Critical Runtime, API, and Cost Constraints
+## 3. Critical Runtime, API, and Cost Constraints
 
 These requirements are mandatory:
 
-- The application runs inside Gemini Canvas.
-- Use only image-generation or image-editing capabilities that Gemini Canvas explicitly exposes to the application at runtime.
-- Do not use Gemini Developer API, Google AI Studio API, Vertex AI API, or any third-party image-generation API.
-- Do not require API keys, paid API accounts, external backends, servers, or user-managed credentials.
+- The application is intended to run directly inside Gemini Canvas.
+- Use only image-generation capabilities that Gemini Canvas explicitly exposes to the application at runtime.
+- Do not use the Gemini Developer API, Google AI Studio API, Vertex AI API, or any third-party image-generation API.
+- Do not require an API key, paid API account, external backend, server, or user-managed credentials.
 - Do not invent a Canvas SDK, JavaScript function, package, endpoint, or runtime integration.
-- Do not assume that a feature available to Gemini during app authoring is callable by the generated application at runtime.
-- Do not claim unlimited or guaranteed free generation. Respect actual account access, availability, and usage limits.
-- The Supabase endpoint is used only for read-only catalog retrieval; it is not an image-generation service.
+- Do not assume that a capability available to Gemini during app authoring is automatically callable by the generated app at runtime.
+- Do not claim unlimited or guaranteed free generation. Respect the account's actual access, availability, and usage limits.
+- Do not use a hidden or indirect image-generation service as a substitute for the native Canvas capability.
 
-**Capability fallback:** If Gemini Canvas does not expose a callable native image-generation capability to the application runtime, clearly mark generation as unavailable. Keep catalog browsing, product selection, color selection, reference preview, and prompt editing usable. Do not fabricate a result, substitute a paid API, request an API key, or present a placeholder as generated output.
+**Capability fallback:** If Gemini Canvas does not expose a callable native image-generation capability to the application runtime, clearly mark generation as unavailable. Keep the prompt editor and supported settings usable. Do not fabricate an image, show a placeholder as generated output, substitute an external API, or ask the user for an API key.
 
-## 8. Main Interface
+## 4. Prompt Editor
 
-Create a polished product-focused creative workspace.
+The prompt editor is the primary input and focus of the application.
+
+Requirements:
+
+- Provide a prominent multiline prompt field.
+- Use a helpful example prompt as placeholder text, not as a submitted default generation.
+- Allow users to write, edit, and clear their prompt.
+- Validate that the prompt is not empty before generation.
+- Preserve the prompt if generation fails.
+- Do not silently rewrite or replace the user's prompt.
+- If prompt enhancement is offered, make it an explicit optional user action and do not imply it is part of image generation unless genuinely supported.
+
+Example placeholder:
+
+```text
+A cinematic editorial photograph of a quiet coastal town at golden hour, warm natural light, detailed architecture, refined composition.
+```
+
+## 5. Optional Generation Settings
+
+Provide optional settings only when they are useful and supported by the actual native generation capability.
+
+### Style presets
+
+Possible UI presets:
+
+- Realistic
+- Photorealistic
+- Anime
+- 3D Render
+- Digital Art
+- Cinematic
+- Minimalist
+- Watercolor
+- Illustration
+- Custom
+
+Rules:
+
+- Presets must be implemented as prompt guidance or native options only where appropriate.
+- Do not claim that a preset is a model capability unless verified.
+- A selected preset may contribute descriptive guidance to the final prompt, but must not overwrite the user's prompt.
+- Provide a clear way to return to Custom or no preset.
+
+### Aspect ratio
+
+Possible choices, only if supported:
+
+- 1:1
+- 3:4
+- 4:3
+- 9:16
+- 16:9
+
+Rules:
+
+- Do not claim or simulate unsupported dimensions.
+- Do not send unsupported settings to the native generation capability.
+- If aspect ratio cannot be controlled, explain that the output format is determined by the available runtime.
+
+## 6. Image Generation Behavior
+
+Implement a dedicated generation adapter/service so the UI is not coupled to an assumed runtime integration.
+
+The generation flow must:
+
+1. Validate that the prompt is non-empty.
+2. Collect only the user prompt and optional settings that are actually supported.
+3. Check whether a supported native Gemini Canvas image-generation capability is genuinely available to the application at runtime.
+4. Pass the prompt and supported settings using the actual documented runtime input format.
+5. Display the returned image only after a real successful generation response.
+6. Handle unavailable capability, usage limits, rejected input, and generation failures with clear messages.
+7. Preserve the user's prompt and settings if generation fails.
+
+Do not fabricate progress percentages or pretend that a request succeeded. Use an indeterminate loading state unless the runtime provides real progress information.
+
+### Internal generation contract
+
+An internal application-level contract may be used to keep the UI organized, for example:
+
+```ts
+type ImageGenerationInput = {
+  prompt: string;
+  style?: string;
+  aspectRatio?: string;
+};
+```
+
+This is only an internal application data shape. It is **not** a claim that Gemini Canvas accepts this exact payload. Map it to the actual supported runtime interface only after verifying that interface.
+
+Do not include a source image, reference image, product, color, or variant in the generation contract.
+
+## 7. Main Interface
+
+Create a polished, focused creative workspace.
 
 ### Header
+
 - Product name: **Gemini Canvas Image Studio**.
 - Clear application identity.
-- New creation/reset action, if useful.
+- New Creation or Reset action.
 
-### Catalog and product selection
-- Product type selector.
-- Product group selector.
-- Product selector.
-- Product title and description.
-- Informational size/price display.
-- Color variant selector.
+### Prompt workspace
 
-### Reference image panel
-- Preview the selected color variant's `image_link`.
-- Show the selected product and color.
-- Show image loading and image error states.
-- Do not provide upload, replace-file, or remove-upload controls.
+- Prominent prompt textarea.
+- Character count only if useful.
+- Clear prompt action.
+- Example prompt guidance.
+- Validation message for an empty prompt.
 
-### Prompt and settings
-- Prompt textarea with a useful example.
-- Optional style presets, for example Realistic, 3D Render, Cinematic, Minimalist, Digital Art, and Custom.
-- Optional aspect ratio selector only where supported.
-- Make unsupported options unavailable or clearly informational; never send unsupported settings to generation.
+### Settings panel
 
-### Result
-- Display only the actual generated image returned by a successful native capability.
-- Provide original/reference comparison where feasible.
-- Download result only when the runtime provides a real result and browser-supported download behavior.
-- Allow reuse of a real generated result only if supported and consistent with the product-based reference workflow.
+- Optional style preset selector.
+- Optional aspect ratio selector, only if supported.
+- Clear indication of selected settings.
+- Reset settings action.
+
+### Generate action
+
+- Clear Generate action.
+- Disabled state when the prompt is empty or generation is unavailable.
+- Loading state during an actual generation request.
+- Prevent accidental duplicate submissions while a request is in progress.
+
+### Result panel
+
+- Display only an actual image returned by a successful native generation operation.
+- Provide a useful empty state before the first generation.
+- Provide download only when a real result and supported download behavior are available.
+- Allow the user to start a new creation.
+- Never display a sample, stock image, mock image, or placeholder as generated output.
 
 ### History
-- Keep generated results in the active session only where the runtime allows it.
-- Show prompt and available metadata.
-- Never create fake history entries for unsuccessful generation.
+
+- Keep successful generated results in the active session only where the runtime allows it.
+- Show the prompt and available metadata for each result.
+- Allow reopening or downloading a result only when supported.
+- Do not create history entries for failed or unavailable generation attempts.
 - Provide a useful empty state.
 
-## 9. Application States and Error Handling
+## 8. Application States and Error Handling
 
 Handle at least these states:
 
-### Catalog
-- Loading catalog.
-- Catalog loaded.
-- Catalog request failed.
-- Empty catalog.
-- Invalid or unexpected API response.
-- No groups for selected product type.
-- No products for selected group.
-
-### Product and reference image
-- No product selected.
-- Product selected.
-- No color variants available.
-- Color variant selected.
-- Reference image loading.
-- Reference image loaded.
-- Reference image failed to load.
-- Invalid image URL.
-
-### Generation
-- Prompt missing.
+- Empty workspace.
+- Prompt entered.
+- Prompt validation error.
 - Ready to generate.
 - Native generation capability unavailable.
 - Generating.
 - Generation successful.
 - Usage limit reached, if reported by runtime.
 - Generation failed.
+- Result unavailable after session reset, if applicable.
 
-Use clear, actionable error messages. Preserve the catalog and current selection when generation fails. Do not fabricate progress percentages; use an indeterminate loading state unless the runtime provides real progress information.
+Use clear, actionable error messages. Preserve the user's prompt and settings after failure. Do not fabricate progress information or successful results.
 
-## 10. Visual Design and Accessibility
+## 9. Visual Design and Accessibility
 
 Create a polished, modern creative workspace:
 
 - Premium, modern, minimalist visual language.
-- Neutral background and restrained accent colors.
+- Neutral background with restrained accent colors.
 - Clear visual hierarchy and readable typography.
 - Responsive desktop, tablet, and mobile layouts.
-- Product selection and reference image should be prominent.
+- Prompt editor and generated result should be the primary visual focus.
 - Avoid clutter and unnecessary decorative elements.
 - Accessible labels, keyboard navigation, and visible focus states.
 - All visible controls must have functional behavior.
 
-Prioritize the product-to-reference-to-generation workflow.
+Prioritize a fast, understandable prompt-to-result workflow.
 
-## 11. Suggested Architecture
+## 10. Suggested Architecture
 
 Use the framework and runtime supported by Gemini Canvas. If React is supported, organize the application in a maintainable, modular way, for example:
 
@@ -272,16 +239,12 @@ Use the framework and runtime supported by Gemini Canvas. If React is supported,
 src/
   components/
     layout/
-    catalog/
-    product/
-    variants/
-    reference-image/
     prompt/
+    settings/
     result/
     history/
     ui/
   services/
-    product-catalog/
     canvas-image-generation/
   hooks/
   types/
@@ -292,61 +255,49 @@ src/
 
 Responsibilities:
 
-- Catalog service: fetch and validate the Supabase response.
-- Catalog state: retain the catalog and current selection.
-- Product selection UI: navigate the product hierarchy.
-- Reference image component: load and display the selected variant image.
+- Prompt state: manage the user's prompt.
+- Settings state: manage optional supported style and aspect ratio choices.
 - Generation adapter: check runtime capability and map the internal input contract to the verified native interface.
-- Result/history components: display only real successful results.
+- Result component: display only real successful generation results.
+- History component: retain and display successful results only where the runtime permits.
+
+Do not add catalog, product, variant, reference-image, upload, or external API services.
 
 Keep Canvas-specific generation integration isolated in the generation adapter. Do not add a mock implementation that can be mistaken for real generation.
 
-## 12. Acceptance Criteria
+## 11. Acceptance Criteria
 
 The application is accepted when:
 
 1. It runs interactively inside Gemini Canvas.
-2. It fetches the product catalog from the specified Supabase Edge Function.
-3. It handles loading, network failure, empty data, and malformed responses.
-4. It preserves the `product_type` → `item_groups` → `products` hierarchy.
-5. Users can select a product.
-6. Product title and description are displayed when available.
-7. `variant_size` is informational only and does not block generation.
-8. Users can select a color from `variant_colors`.
-9. Only the selected color's `image_link` is used as the reference image.
-10. Changing color updates the reference image and generation input.
-11. `additional_image_link` is not used.
-12. Manual image upload and related UI are absent.
-13. Generation requires a selected product, selected color, successfully loaded reference image, and non-empty prompt.
-14. The application checks for a real supported Canvas-native generation capability.
-15. No Developer API, third-party generation API, API key, paid API account, or external backend is used.
-16. No fake or placeholder generation result is presented as real output.
-17. Errors and unavailable/limited access are communicated honestly.
+2. The primary workflow is Text-to-Image.
+3. Users can enter, edit, and clear a text prompt.
+4. Empty prompts are rejected with a clear validation message.
+5. Optional style presets work as prompt guidance or verified native options.
+6. Aspect ratio choices are exposed only when supported.
+7. The application checks for a real, supported Canvas-native image-generation capability.
+8. It uses no Gemini Developer API, Google AI Studio API, Vertex AI API, third-party image-generation API, API key, paid API account, or external backend.
+9. No Supabase or Edge Function integration remains.
+10. No product catalog, product selector, color variant, size variant, or price UI remains.
+11. No image upload, file picker, drag-and-drop image input, image URL input, or reference-image workflow remains.
+12. No source or reference image is required or passed to generation.
+13. No fake or placeholder generation result is presented as real output.
+14. A result is displayed only after successful native generation.
+15. Users can download real results when supported.
+16. Errors and unavailable/limited access are communicated honestly.
+17. Successful results can be kept in session history where supported.
 18. All visible controls work and the layout is responsive.
 
-## 13. Dependencies and Verification Risks
+## 12. Final Instructions for Gemini Canvas
 
-Before claiming the implementation is fully functional, verify:
+Build the interactive **Gemini Canvas Image Studio V4 — Text-to-Image** application directly in Gemini Canvas according to this specification.
 
-- The complete live JSON response and its actual nesting/field names.
-- Browser access to the Supabase endpoint from Gemini Canvas.
-- CORS behavior for the Canvas runtime origin.
-- Actual consistency of product groups, product records, and color variants.
-- Accessibility and successful loading of the supplied image URLs.
-- The actual native Gemini Canvas runtime interface for image-to-image input and output.
+Implement a focused text-to-image workflow. The user provides a text prompt and may choose optional style or aspect-ratio settings only where the runtime supports them.
 
-Do not claim these items are verified without testing them. If any dependency cannot be verified in the Canvas environment, document the limitation and implement honest fallback behavior.
+Do not add image upload, image URL input, reference images, image-to-image editing, product catalog, Supabase, Edge Functions, or external backends.
 
-## 14. Final Instructions for Gemini Canvas
+Before implementing image generation, inspect the capabilities actually available in the Canvas environment. Use native Gemini image generation only if it is genuinely exposed to this application at runtime.
 
-Build the interactive **Gemini Canvas Image Studio V3** application directly in Gemini Canvas according to this specification.
+If native text-to-image generation cannot be called from the application runtime, implement the working prompt and settings interface and clearly report that generation is unavailable. Do not switch to a paid API, ask for credentials, or display fake generated content.
 
-Start by inspecting the actual Supabase response and the capabilities genuinely exposed by the Canvas runtime. Implement the catalog browsing and product/color selection flow using verified data. Use the selected color variant's `image_link` as the only reference image source.
-
-Do not add manual image upload. Do not require size selection. Do not use `additional_image_link`. Do not invent API behavior or runtime integrations.
-
-Before implementing image generation, inspect the capabilities actually available in the Canvas environment. Use native Gemini image generation only if it is genuinely exposed to this application.
-
-If native image-to-image generation cannot be called from the application runtime, deliver the working catalog, selection, reference preview, and prompt interface, and clearly report that generation is unavailable. Do not switch to a paid API, ask for credentials, or display fake generated content.
-
-The priority is a genuinely usable, product-based Gemini Canvas application with no API-key setup and no external generation backend.
+The priority is a genuinely usable Gemini Canvas Text-to-Image application with no API-key setup and no external generation backend.
