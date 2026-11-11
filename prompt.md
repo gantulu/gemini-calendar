@@ -1,9 +1,9 @@
-# Gemini Calendar — Master Prompt V2
+# Gemini Calendar — Master Prompt V2.1
 ## Single-File React Application for Gemini Canvas
 
 **Document:** `prompt.md`  
 **Repository:** `gantulu/gemini-calendar`  
-**Baseline:** Gemini Calendar Master Prompt V2  
+**Baseline:** Gemini Calendar Master Prompt V2.1  
 **Target runtime:** Gemini Canvas  
 **Application:** Gemini Calendar — Apple Campaign Image Studio
 
@@ -47,11 +47,43 @@ The primary user outcome is a generated image—not a written prompt.
 
 Core workflow:
 
-**Select Apple Product → Choose Campaign Concept → Configure Visual Direction → Generate Image → Preview → Download / Regenerate**
+**Select Main Category → Select Category Topic / Product → Choose Campaign Concept → Configure Visual Direction → Generate Image → Preview → Download / Regenerate**
+
+The main category is the first navigation and content-intent decision. Campaign concept and visual direction are subsequent creative configuration steps.
 
 Do not turn the product into a general-purpose prompt-writing tool. Construct image instructions internally and do not expose a prompt editor, prompt-copy panel, or prompt as the primary result.
 
-# 3. LOCKED PRODUCT REQUIREMENTS
+# 3. MAIN CATEGORY NAVIGATION — LOCKED
+
+Use the following nine categories as the application's **primary navigation**. Preserve the exact order, numbering, and category labels.
+
+| No. | Category | Group |
+|---:|---|---|
+| 01 | iPhone | Product Categories |
+| 02 | iPad | Product Categories |
+| 03 | Mac | Product Categories |
+| 04 | Apple Watch | Product Categories |
+| 05 | AirPods | Product Categories |
+| 06 | Apple Accessories | Product Categories |
+| 07 | Tips & Tutorials | Content Categories |
+| 08 | Apple Ecosystem | Content Categories |
+| 09 | Product Comparison | Content Categories |
+
+## Category behavior
+
+- Display all nine categories as the first-level navigation in the main workspace.
+- Make the selected category visually clear and keep the category order unchanged.
+- The user must select a main category before configuring a creation.
+- Categories 01–06 are **Product Categories**. They focus on product showcases, product-specific campaigns, and promotional visuals.
+- Categories 07–09 are **Content Categories**. They focus on educational tips/tutorials, Apple ecosystem topics, and product comparisons.
+- When a Product Category is selected, show relevant product context and allow the user to specify the product model/details.
+- When a Content Category is selected, show a relevant topic/content input. Do not force selection of a single product when the content topic does not require one.
+- Product Comparison may allow the user to specify two or more Apple products/models to compare. Do not invent specifications or declare a winner without reliable user-provided or verified facts.
+- Category selection determines the content intent. Campaign concept and visual direction remain separate subsequent controls.
+- Do not treat these nine categories as campaign concepts or merge them into the campaign concept selector.
+- Do not add, remove, rename, or reorder categories without explicit user approval.
+
+# 4. LOCKED PRODUCT REQUIREMENTS
 
 | Area | Requirement |
 |---|---|
@@ -76,7 +108,7 @@ Do not turn the product into a general-purpose prompt-writing tool. Construct im
 
 Do not add features that contradict these requirements.
 
-# 4. APPLE PRODUCT SELECTOR
+# 5. APPLE PRODUCT SELECTOR
 
 Provide a clear product-family selector:
 
@@ -100,7 +132,7 @@ Product accuracy rules:
 - Never imply that an AI-generated image is an official Apple product photograph.
 - If exact product fidelity cannot be guaranteed, do not claim otherwise.
 
-# 5. CAMPAIGN CONCEPT SELECTOR
+# 6. CAMPAIGN CONCEPT SELECTOR
 
 Offer these campaign concepts as selectable cards or similarly clear controls:
 
@@ -116,7 +148,7 @@ Each concept should have a concise visual description and a sensible default dir
 
 Allow optional custom creative direction. Do not let custom text override product-accuracy and no-fabrication rules.
 
-# 6. VISUAL DIRECTION CONTROLS
+# 7. VISUAL DIRECTION CONTROLS
 
 Provide practical, easy-to-use controls for:
 
@@ -141,7 +173,7 @@ Suggested visual styles:
 
 Controls represent creative instructions. Do not present them as guaranteed generation parameters unless the native generation capability actually supports them.
 
-# 7. INSTAGRAM IMAGE FORMAT
+# 8. INSTAGRAM IMAGE FORMAT
 
 Default composition:
 
@@ -163,7 +195,7 @@ Text in images:
 - If the user supplies exact copy, use it as faithfully as the generation capability allows.
 - Do not promise perfect typography or spelling in generated images.
 
-# 8. GEMINI CANVAS NATIVE IMAGE GENERATION — CRITICAL
+# 9. GEMINI CANVAS NATIVE IMAGE GENERATION — CRITICAL
 
 Use only image-generation functionality genuinely available through the current Gemini Canvas environment.
 
@@ -197,22 +229,31 @@ Strict prohibitions:
 
 The application must be honest about this boundary. A polished UI does not count as successful image generation.
 
-# 9. USER EXPERIENCE AND APPLICATION FLOW
+# 10. USER EXPERIENCE AND APPLICATION FLOW
 
 Build a focused creative workspace with this flow:
 
-## Step A — Select Product
+## Step A — Select Main Category
 
-- Choose one Apple product family.
-- Optionally enter model/details.
-- Optionally select a visual color.
+- Present the nine locked main categories in the exact order defined in Section 3.
+- Require one category selection before proceeding.
+- Clearly distinguish Product Categories (01–06) from Content Categories (07–09).
 
-## Step B — Choose Campaign
+## Step B — Select Category Context
+
+- For iPhone, iPad, Mac, Apple Watch, AirPods, and Apple Accessories: collect the relevant product family/model context.
+- For Tips & Tutorials: collect the tutorial topic or tip.
+- For Apple Ecosystem: collect the ecosystem topic, use case, or connected-device context.
+- For Product Comparison: collect the products/models to compare and the comparison topic.
+- Do not force product-model fields on content categories when they are not relevant.
+- Do not invent factual product details.
+
+## Step C — Choose Campaign
 
 - Select one campaign concept.
 - Optionally enter a custom creative direction.
 
-## Step C — Configure Visual Direction
+## Step D — Configure Visual Direction
 
 - Choose background/environment.
 - Choose lighting.
@@ -220,7 +261,7 @@ Build a focused creative workspace with this flow:
 - Choose camera angle.
 - Choose mood/style.
 
-## Step D — Generate
+## Step E — Generate
 
 - Validate required selections.
 - Trigger only a verified native generation capability.
@@ -228,7 +269,7 @@ Build a focused creative workspace with this flow:
 - Show an honest loading state.
 - Preserve all selections if generation fails.
 
-## Step E — Preview and Actions
+## Step F — Preview and Actions
 
 After a real successful generation:
 
@@ -239,7 +280,7 @@ After a real successful generation:
 
 Do not show a generated-image preview until a real image result is returned.
 
-# 10. UI DESIGN DIRECTION
+# 11. UI DESIGN DIRECTION
 
 Create a premium, modern, minimalist, responsive interface.
 
@@ -257,16 +298,17 @@ Visual direction:
 Suggested interface structure:
 
 1. Header: Gemini Calendar + Apple Campaign Image Studio.
-2. Product selection.
-3. Campaign concept selection.
-4. Visual direction controls.
-5. Output format information (9:16; target dimensions clearly qualified).
-6. Generate action or honest capability-unavailable state.
-7. Result preview and supported actions.
+2. Primary navigation with the nine main categories in the locked order.
+3. Category-specific product or content context.
+4. Campaign concept selection.
+5. Visual direction controls.
+6. Output format information (9:16; target dimensions clearly qualified).
+7. Generate action or honest capability-unavailable state.
+8. Result preview and supported actions.
 
 Use a cohesive design system for spacing, typography, surfaces, borders, and controls. Ensure all visible controls have real behavior.
 
-# 11. STATE, VALIDATION, AND ERROR HANDLING
+# 12. STATE, VALIDATION, AND ERROR HANDLING
 
 Handle the relevant states:
 
@@ -294,7 +336,7 @@ Requirements:
 - Disable actions that cannot actually work and explain why.
 - Do not claim a download succeeded unless the browser/runtime confirms it.
 
-# 12. ACCESSIBILITY AND RESPONSIVENESS
+# 13. ACCESSIBILITY AND RESPONSIVENESS
 
 - Use semantic controls and accessible labels.
 - Support keyboard interaction.
@@ -304,7 +346,7 @@ Requirements:
 - Ensure the layout works on narrow mobile screens and desktop.
 - Avoid controls that depend only on color to communicate state.
 
-# 13. IMPLEMENTATION QUALITY
+# 14. IMPLEMENTATION QUALITY
 
 Within the single React artifact:
 
@@ -318,7 +360,7 @@ Within the single React artifact:
 - Do not leave decorative or inert controls that appear functional.
 - Do not split code, styles, or assets into separate files.
 
-# 14. ACCEPTANCE CHECKLIST
+# 15. ACCEPTANCE CHECKLIST
 
 The application is complete only when all applicable items are verified in Gemini Canvas:
 
@@ -326,6 +368,11 @@ The application is complete only when all applicable items are verified in Gemin
 - [ ] The app runs directly in Gemini Canvas preview.
 - [ ] No Vite/Next/CRA scaffold, package installation, build step, or separate source files are required.
 - [ ] App identity is Gemini Calendar — Apple Campaign Image Studio.
+- [ ] All nine main categories are displayed in the exact locked order and with exact labels.
+- [ ] Categories 01–06 are treated as Product Categories.
+- [ ] Categories 07–09 are treated as Content Categories.
+- [ ] Selecting a category changes the relevant context/input flow.
+- [ ] Product Comparison supports user-specified comparison subjects without fabricating facts.
 - [ ] Product-family selection works.
 - [ ] Optional model/details input works.
 - [ ] Campaign concept selection works.
@@ -346,7 +393,7 @@ The application is complete only when all applicable items are verified in Gemin
 
 If native generation cannot be invoked from the app, mark that acceptance item as **blocked by runtime capability**, explain the evidence, and do not claim the application is fully complete.
 
-# 15. EXECUTION INSTRUCTIONS
+# 16. EXECUTION INSTRUCTIONS
 
 Now create the application directly in Gemini Canvas.
 
@@ -367,4 +414,4 @@ If a native image-generation call is not available to the app, finish the functi
 
 ---
 
-**END OF GEMINI CALENDAR MASTER PROMPT V2**
+**END OF GEMINI CALENDAR MASTER PROMPT V2.1**
