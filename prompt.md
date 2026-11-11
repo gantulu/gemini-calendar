@@ -1,44 +1,69 @@
-# Gemini Canvas Prompt — Image-to-Image AI Generator
+# Gemini Canvas Image Studio V2
 
-Act as a senior frontend engineer, UI/UX designer, and AI application architect.
+## Role
 
-Build a functional web application named **Image Studio**. The application allows users to upload an existing image, describe the desired transformation with a text prompt, configure output options, generate a new image based on the reference image, preview the result, compare it with the original, and download the generated image.
+Act as a senior frontend engineer, product designer, and Gemini Canvas application builder.
 
-## 1. Product Goal
+Build **Image Studio**, an interactive image-to-image creation application that runs directly inside Gemini Canvas.
 
-Create an image-to-image workspace, not a marketing landing page.
+## 1. Core Product Requirement
+
+Users must be able to:
+1. Upload an image from their device.
+2. Describe the desired edit or transformation.
+3. Choose an optional visual style and output aspect ratio.
+4. Generate an edited image using image-generation capability natively available in the Gemini Canvas environment.
+5. Preview, compare, reuse, and download the result.
 
 Primary workflow:
 
-**Upload Image → Write Prompt → Configure Output → Generate → Preview → Compare → Download**
+**Upload Image → Write Prompt → Configure → Generate with Canvas-native Gemini capability → Preview → Compare → Download**
 
-The application must clearly distinguish real AI generation from a simulated demo.
+This is an image-to-image application, not a marketing landing page or static mockup.
 
-## 2. Technology
+## 2. Critical Runtime and Cost Constraints
 
-Use:
+These requirements are mandatory:
+
+- The application is intended to run inside Gemini Canvas.
+- Use only image-generation or image-editing capabilities that Gemini Canvas itself explicitly makes available to the application at runtime.
+- Prefer the built-in Gemini capability available through Canvas features such as **Add Gemini features**, when supported for this application.
+- Do not use the Gemini Developer API, Google AI Studio API, Vertex AI API, or any third-party image-generation API.
+- Do not require an API key, paid API account, external backend, server, or user-managed credentials.
+- Do not invent a Canvas SDK, JavaScript function, package, endpoint, or runtime integration. First inspect and use only capabilities and interfaces actually exposed by the Canvas environment.
+- Do not assume that a feature available to Gemini during app authoring is automatically callable by the generated app at runtime.
+- Do not claim unlimited or guaranteed free generation. Respect the account's actual access, availability, and usage limits.
+
+**Capability fallback:** If Gemini Canvas does not expose a callable native image-generation capability to the application runtime, explain this limitation clearly in the UI or implementation notes. Do not silently substitute a paid API, ask for an API key, generate a fake result, or present a placeholder as AI output. Complete the usable upload, prompt, settings, and preview interface, and clearly mark generation as unavailable until a supported native capability exists.
+
+## 3. Technology and Implementation
+
+Use the application framework and runtime supported by Gemini Canvas. If a React application is supported, use:
 - React
 - TypeScript
-- Vite
 - Tailwind CSS
 - Lucide React
 
-Use reusable components, typed props, clear separation of concerns, and responsive layouts.
+Keep the implementation modular, responsive, and easy to maintain. Avoid unnecessary dependencies and external services.
 
-## 3. Main Interface
+## 4. Main Interface
 
 ### Header
-- Image Studio logo and name.
+- Product name: **Image Studio**.
+- Simple navigation.
 - New Creation action.
-- Simple, unobtrusive navigation.
 
-### Input Workspace
-- Drag-and-drop image upload.
-- File picker fallback.
-- Preview of the uploaded image.
-- Replace and remove image actions.
-- Prompt textarea with helpful placeholder text.
-- Style presets:
+### Image Input
+- Drag-and-drop upload.
+- File picker.
+- Display uploaded image preview.
+- Replace and remove actions.
+- Validate supported image formats and reasonable file size.
+- Show clear validation messages.
+
+### Prompt and Settings
+- Prompt textarea with an example editing instruction.
+- Optional style presets:
   - Realistic
   - Anime
   - 3D Render
@@ -47,75 +72,58 @@ Use reusable components, typed props, clear separation of concerns, and responsi
   - Minimalist
   - Watercolor
   - Custom
-- Aspect ratio options:
+- Aspect ratio:
   - Original
   - 1:1
   - 3:4
   - 4:3
   - 9:16
   - 16:9
-- Generate Image action.
+- Make it clear that unsupported options must not be sent to the generation capability.
 
-### Result Workspace
-- Generated image preview.
-- Original/generated comparison.
-- Download action.
-- Generate Again action.
-- Use as Reference action.
+### Result
+- Display the actual generated image returned by the native capability.
+- Original/result comparison.
+- Download result.
+- Generate again.
+- Use result as the next reference image.
 
-### Generation History
-- Thumbnail for each generated result.
-- Prompt used.
-- Generation date/time.
-- Open and download actions.
-- Empty state when no history exists.
+### History
+- Keep generated results in the active session where the runtime allows it.
+- Show thumbnail, prompt, and available timestamp.
+- Allow users to reopen and download a result.
+- Show a useful empty state.
 
-## 4. Visual Design
+## 5. Image-to-Image Generation Behavior
 
-Use a modern, premium AI SaaS aesthetic:
-- Neutral background and restrained accent color.
-- Clear typography and visual hierarchy.
-- Generous whitespace.
-- Subtle borders and shadows.
-- Consistent rounded corners.
+Implement a dedicated generation adapter/service so the UI is not coupled to a specific runtime integration.
+
+The generation flow must:
+1. Confirm that a source image and non-empty prompt are present.
+2. Check whether a supported native Canvas image-generation capability is actually available.
+3. Pass the source image and editing prompt to that capability using its documented input format.
+4. Apply optional settings only when the capability supports them.
+5. Display the returned image only after a successful response.
+6. Handle unavailable capability, quota/limit errors, rejected input, and generation failures with clear messages.
+7. Preserve the source image if generation fails.
+
+Do not fabricate progress percentages or pretend that a generation request succeeded. Use an indeterminate loading state unless the runtime provides real progress information.
+
+## 6. Visual Design
+
+Create a polished, modern creative workspace:
+- Neutral background with restrained accent colors.
+- Strong visual hierarchy and readable typography.
+- Spacious, uncluttered layout.
+- Subtle borders and consistent corner radii.
 - Responsive desktop, tablet, and mobile layouts.
+- Accessible labels, keyboard navigation, and visible focus states.
 
-Prioritize the working creation workspace over decorative elements.
+Prioritize the image creation workflow over decorative elements.
 
-## 5. Functional Requirements
+## 7. Suggested Architecture
 
-Implement:
-- Drag-and-drop upload and file picker.
-- Image type and file-size validation.
-- Image preview before generation.
-- Replace and remove uploaded image.
-- Prompt input and style/aspect-ratio selection.
-- Form validation before generation.
-- Loading, progress/status, success, and error states.
-- Result preview and original/result comparison.
-- Download generated image.
-- Generation history during the active application session.
-- Use generated output as the next reference image.
-
-Every visible control must have a meaningful action. Do not add decorative buttons that do nothing.
-
-## 6. Image-to-Image AI Integration
-
-Prepare a dedicated image-generation service that can connect to an image-to-image model/API.
-
-Requirements:
-- Keep API integration separate from UI components.
-- Send the reference image and text prompt to the generation service.
-- Support generation options where the selected provider allows them.
-- Handle API errors and unavailable providers.
-- Never expose secret API keys in browser code or client-side environment variables.
-- Keep provider-specific request/response mapping inside the service layer.
-
-If no real provider credentials or endpoint are configured, implement a clearly labeled **Demo Mode**. Do not fabricate AI output or present a placeholder as a real generated result. Show an explicit message explaining that real generation requires a configured image-to-image provider.
-
-## 7. Suggested Project Organization
-
-Organize the code by responsibility. A suggested structure:
+Use a structure appropriate to the Canvas runtime. For React, a suggested organization is:
 
 ```text
 src/
@@ -127,8 +135,7 @@ src/
     history/
     ui/
   services/
-    image-generation/
-    image-upload/
+    canvas-image-generation/
   hooks/
   types/
   utils/
@@ -136,33 +143,44 @@ src/
   main.tsx
 ```
 
-Adjust the structure only when there is a clear implementation benefit.
+The generation service must expose a clear capability check and a typed generation contract. Keep all Canvas-specific integration in that service. Do not add a mock implementation that can be mistaken for real generation.
 
-## 8. Quality Requirements
+## 8. Application States
 
-- The application must run successfully.
-- Use TypeScript types for application data and service contracts.
-- Keep components focused and reusable.
-- Handle invalid files and failed requests gracefully.
-- Avoid duplicated logic and unnecessary dependencies.
-- Ensure keyboard accessibility and visible focus states.
-- Ensure the interface works on narrow mobile screens.
-- Do not claim that an API integration works unless it is actually configured and tested.
+Provide clear UI states for:
+- Empty workspace.
+- Image selected.
+- Invalid upload.
+- Ready to generate.
+- Generating.
+- Generation successful.
+- Generation unavailable in this Canvas runtime.
+- Usage limit reached.
+- Generation failed.
+
+When generation is unavailable, keep upload and prompt editing usable and explain why the Generate action cannot proceed.
 
 ## 9. Acceptance Criteria
 
-The result is acceptable when:
-1. A user can upload an image and see its preview.
-2. A user can enter a transformation prompt.
-3. A user can select a style and aspect ratio.
-4. The Generate action validates the input and reports the actual application mode.
-5. The application handles loading and error states.
-6. A real generated image is shown only when a real provider returns one.
-7. A generated image can be compared with the source and downloaded.
-8. A result can be reused as a reference image.
-9. The layout is responsive and all visible controls work.
-10. No API secret is exposed in frontend code.
+The application is accepted when:
+1. It runs interactively in Gemini Canvas.
+2. Users can upload, preview, replace, and remove an image.
+3. Users can enter an image-editing prompt.
+4. Users can select optional style and aspect ratio settings.
+5. It checks for a real, supported Canvas-native image-generation capability.
+6. It uses no Developer API, third-party API, API key, or external backend.
+7. It never presents demo or placeholder content as a generated image.
+8. It shows a real result only after successful native generation.
+9. Users can compare, download, and reuse a real generated result.
+10. Errors and unavailable/limited access are communicated honestly.
+11. All visible controls work and the layout is responsive.
 
-## 10. Final Instruction
+## 10. Final Instructions for Gemini Canvas
 
-Build the application directly in Gemini Canvas as an interactive web application. Do not return only a design description, static mockup, or screenshot. Implement the complete frontend workflow and clearly identify any backend/API configuration still required for real image-to-image generation.
+Build the interactive **Image Studio** application directly in Gemini Canvas.
+
+Before implementing image generation, inspect the capabilities actually available in the Canvas environment. Use the native Gemini image-generation integration only if it is genuinely exposed to this application.
+
+Do not merely describe a possible integration or invent code for a nonexistent runtime API. If native image generation cannot be called from the application, implement the rest of the working interface and clearly report that runtime limitation. Do not switch to a paid API or ask the user for credentials.
+
+The priority is a genuinely usable Canvas application with no API-key setup and no external backend—not a visual mockup that falsely claims to generate images.
