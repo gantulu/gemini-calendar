@@ -43,9 +43,9 @@ export default function App() {
   const [mood, setMood] = useState(moods[0]);
   const [customColor, setCustomColor] = useState("");
   const [customBackground, setCustomBackground] = useState("");
-  const [notice, setNotice] = useState("");
-
   const ready = useMemo(() => Boolean(product && concept), [product, concept]);
+  // Keep generation disabled until Canvas adds and verifies its native image feature.
+  const nativeGenerationAvailable = false;
 
   function reset() {
     setProduct("iPhone");
@@ -61,12 +61,8 @@ export default function App() {
     setMood(moods[0]);
     setCustomColor("");
     setCustomBackground("");
-    setNotice("");
   }
 
-  function requestGeneration() {
-    setNotice("Native image generation has not yet been connected in this Canvas app. Open this app in Gemini Canvas and use Add Gemini features to add image generation. No image was generated.");
-  }
 
   return (
     <main className="app-shell">
@@ -140,7 +136,7 @@ export default function App() {
             <div className="ratio-icon" aria-hidden="true"><span /></div>
           </div>
 
-          <button className="generate-button" onClick={requestGeneration} disabled={!ready}>
+          <button className="generate-button" disabled={!ready || !nativeGenerationAvailable}>
             <span className="sparkle">✳</span> Generate image <span className="button-arrow">↗</span>
           </button>
           <p className="fine-print">Image generation becomes available after native Gemini features are connected in Canvas.</p>
@@ -175,7 +171,6 @@ export default function App() {
               <p>Google provides an “Add Gemini features” workflow for image generation in Canvas. Complete that native connection before enabling generation here.</p>
             </div>
           </div>
-          {notice && <div className="inline-notice" role="status">{notice}</div>}
           <div className="preview-meta">
             <span>GEMINI CALENDAR</span>
             <span>APPLE STORE MALAYSIA</span>
