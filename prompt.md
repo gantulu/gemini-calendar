@@ -31,13 +31,10 @@ This is a **Text-to-Image** application. It must not request, upload, fetch, sel
 
 The following are out of scope and must not be implemented:
 
-- Supabase, including Supabase Edge Functions.
-- The endpoint `https://zyiavfljweavoxyyplxj.supabase.co/functions/v1/get-trx-products`.
 - Product catalog, product type, product group, product selector, and product metadata.
 - Color variants, size variants, and price information.
 - Reference image, source image, image-to-image, and image-editing workflows.
 - Manual image upload, file picker, drag-and-drop image input, and image URL input.
-- Supabase Storage or any other external image storage.
 - Any external backend or server added for image generation.
 
 Do not retain hidden or unused UI, services, state, types, dependencies, or instructions for these removed features.
@@ -277,7 +274,7 @@ The application is accepted when:
 6. Aspect ratio choices are exposed only when supported.
 7. The application checks for a real, supported Canvas-native image-generation capability.
 8. It uses no Gemini Developer API, Google AI Studio API, Vertex AI API, third-party image-generation API, API key, paid API account, or external backend.
-9. No Supabase or Edge Function integration remains.
+9. The application has no external catalog or data-service dependency.
 10. No product catalog, product selector, color variant, size variant, or price UI remains.
 11. No image upload, file picker, drag-and-drop image input, image URL input, or reference-image workflow remains.
 12. No source or reference image is required or passed to generation.
@@ -294,7 +291,7 @@ Build the interactive **Gemini Canvas Image Studio V4 — Text-to-Image** applic
 
 Implement a focused text-to-image workflow. The user provides a text prompt and may choose optional style or aspect-ratio settings only where the runtime supports them.
 
-Do not add image upload, image URL input, reference images, image-to-image editing, product catalog, Supabase, Edge Functions, or external backends.
+Do not add image upload, image URL input, reference images, image-to-image editing, product-catalog features, or external backends.
 
 Before implementing image generation, inspect the capabilities actually available in the Canvas environment. Use native Gemini image generation only if it is genuinely exposed to this application at runtime.
 
