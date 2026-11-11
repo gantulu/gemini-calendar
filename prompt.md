@@ -1,60 +1,84 @@
-# Gemini Calendar — Requirement Specification V1
+# Gemini Calendar — Master Prompt V2
+## Single-File React Application for Gemini Canvas
 
-**Status:** Draft for user approval  
-**Repository:** `gantulu/gemini-calendar`  
 **Document:** `prompt.md`  
-**Product type:** Gemini Canvas native AI image creation application  
-**Target use:** Instagram content for Apple Store Malaysia
+**Repository:** `gantulu/gemini-calendar`  
+**Baseline:** Gemini Calendar Master Prompt V2  
+**Target runtime:** Gemini Canvas  
+**Application:** Gemini Calendar — Apple Campaign Image Studio
 
 ---
 
-## 1. Product Definition
+# ROLE
 
-Build **Gemini Calendar**, a focused AI image creation application for producing premium promotional visuals featuring Apple products for the Instagram presence of Apple Store Malaysia.
+Act as a senior React engineer, product designer, and AI image-generation workflow engineer.
 
-The application collects a small set of creative choices, constructs an image-generation instruction internally, and generates an image using an image-generation capability genuinely available through the native Gemini Canvas environment.
+Create a complete, polished, interactive application named **Gemini Calendar** that runs directly inside **Gemini Canvas**.
 
-The primary user outcome is a finished vertical promotional image. The application is not a general-purpose prompt-writing tool.
+This file is the master instruction for generating the application. Follow it as an implementation prompt, not as a request to create a conventional repository project or another requirements document.
 
-### Core workflow
+# 1. NON-NEGOTIABLE OUTPUT CONTRACT
+
+Generate the application as **one self-contained React application in a single code artifact/file**, suitable for Gemini Canvas preview and execution.
+
+Requirements:
+
+- Use React and the syntax/runtime supported by Gemini Canvas.
+- Keep the complete application implementation together in one file/artifact.
+- Include all application components, state, event handlers, styles, and utility functions in that same artifact.
+- Use inline styles or a style element in the same artifact; do not require a separate CSS file.
+- Do not split the implementation into multiple files.
+- Do not create a Vite, Next.js, CRA, or other conventional project scaffold.
+- Do not require a terminal, Node.js, npm, pnpm, build step, package installation, or local development server.
+- Do not create package.json, index.html, src folders, configuration files, or separate assets.
+- Do not output only a wireframe, mockup, static screenshot, or product specification. Build the working React interface.
+- Do not stop after describing the implementation. Produce the actual application in Canvas.
+- Use only dependencies and browser/runtime features already supported by Canvas. Prefer React and native browser capabilities; avoid unnecessary dependencies.
+
+The deliverable is the running single-file React application in Gemini Canvas. This GitHub prompt file is an instruction source; it is not the application runtime.
+
+# 2. PRODUCT PURPOSE
+
+Build **Gemini Calendar**, a focused AI image-creation studio for producing premium promotional visuals featuring Apple products for Instagram content intended for **Apple Store Malaysia**.
+
+The user configures a product and creative direction, then generates a finished promotional image.
+
+The primary user outcome is a generated image—not a written prompt.
+
+Core workflow:
 
 **Select Apple Product → Choose Campaign Concept → Configure Visual Direction → Generate Image → Preview → Download / Regenerate**
 
-The generated image is the primary and only user-facing result. Do not show the assembled prompt as a result or require the user to copy it elsewhere.
+Do not turn the product into a general-purpose prompt-writing tool. Construct image instructions internally and do not expose a prompt editor, prompt-copy panel, or prompt as the primary result.
 
----
-
-## 2. Locked V1 Requirements
+# 3. LOCKED PRODUCT REQUIREMENTS
 
 | Area | Requirement |
 |---|---|
-| Application name | Gemini Calendar |
-| Target platform | Gemini Canvas |
-| Target audience/use | Instagram content for Apple Store Malaysia |
-| Main capability | Text-to-Image |
-| Generation method | Native Gemini Canvas image-generation capability only |
-| Main output | Generated image only |
+| App name | Gemini Calendar |
+| Descriptor | Apple Campaign Image Studio |
+| Platform | Gemini Canvas |
+| Use case | Instagram promotional images for Apple Store Malaysia |
+| Generation mode | Text-to-Image |
+| Primary output | Actual generated image |
 | Default aspect ratio | 9:16 portrait |
-| Target export size | 1080 × 1920 px, only when supported |
-| Image upload | Not included |
-| Image-to-Image | Not included |
-| Reference image | Not included |
+| Target dimensions | 1080 × 1920 px, only if supported |
+| Image upload | Not allowed |
+| Reference image | Not allowed |
+| Image-to-Image | Not allowed |
 | External image API | Not allowed |
-| Gemini API key | Not required or requested |
+| API key | Not required; never request one |
 | Backend/server | None |
-| Supabase/database | None |
+| Database/Supabase | None |
 | Edge Functions | None |
-| User accounts | None |
-| Persistent generation history | Not required |
-| Session history | Optional, only if reliably supported by the runtime |
+| Authentication | None |
+| Persistent history | Not required |
 
-These are product requirements. They do not guarantee that the Canvas runtime supports every generation, resolution, download, or session feature. The implementation must verify runtime capabilities and describe limitations honestly.
+Do not add features that contradict these requirements.
 
----
+# 4. APPLE PRODUCT SELECTOR
 
-## 3. Apple Product Selection
-
-Provide a simple product-family selector with these options:
+Provide a clear product-family selector:
 
 - iPhone
 - iPad
@@ -63,42 +87,38 @@ Provide a simple product-family selector with these options:
 - AirPods
 - Apple Accessories
 
-The user may optionally specify a product model or product details in a short text field. Do not invent a model, technical specification, feature, or product capability.
+Allow an optional short text input for the exact product model or additional product context supplied by the user.
 
-A product-family selection is creative context only. It is not a live product catalog and must not imply current stock, pricing, or availability.
+Optionally provide a product-color choice. Treat the selected color as creative guidance, not as confirmation that Apple sells that model in that color.
 
-### Product representation rules
+Product accuracy rules:
 
-- Keep the selected product as the visual subject.
-- Preserve recognizable Apple product design language.
-- Do not intentionally distort product proportions, materials, ports, camera layout, display, buttons, or other recognizable hardware details.
-- Do not invent product generations, colors, accessories, or specifications.
-- Do not add unsupported feature claims, prices, discounts, warranties, or availability statements.
-- If exact product fidelity cannot be guaranteed by image generation, do not claim that the generated image is an official or exact product photograph.
+- Keep the selected Apple product as the main visual subject.
+- Preserve recognizable product proportions and hardware design.
+- Do not invent model names, generations, specifications, colors, features, or accessories.
+- Do not invent prices, discounts, warranty terms, stock, availability, or promotional claims.
+- Never imply that an AI-generated image is an official Apple product photograph.
+- If exact product fidelity cannot be guaranteed, do not claim otherwise.
 
----
+# 5. CAMPAIGN CONCEPT SELECTOR
 
-## 4. Campaign Concept
+Offer these campaign concepts as selectable cards or similarly clear controls:
 
-Offer a concise set of campaign concepts:
+1. Premium Product Showcase
+2. Product Launch
+3. Lifestyle Photography
+4. Minimalist Studio
+5. Cinematic Product
+6. Seasonal Campaign
+7. Promotional Design
 
-- Premium Product Showcase
-- Product Launch
-- Lifestyle Photography
-- Minimalist Studio
-- Cinematic Product
-- Seasonal Campaign
-- Promotional Design
+Each concept should have a concise visual description and a sensible default direction.
 
-The concept guides composition and visual treatment. It must not introduce unsupported commercial claims.
+Allow optional custom creative direction. Do not let custom text override product-accuracy and no-fabrication rules.
 
-The application may provide a custom concept text field for a user-supplied creative direction.
+# 6. VISUAL DIRECTION CONTROLS
 
----
-
-## 5. Visual Configuration
-
-Provide practical controls for the following:
+Provide practical, easy-to-use controls for:
 
 - Product color
 - Background / environment
@@ -108,9 +128,9 @@ Provide practical controls for the following:
 - Visual mood
 - Photography / render style
 
-Use curated presets with sensible defaults. Avoid forcing the user to configure every property.
+Use curated presets and sensible defaults. Avoid overwhelming the user with too many controls.
 
-Example style directions:
+Suggested visual styles:
 
 - Premium commercial photography
 - Photorealistic studio
@@ -119,291 +139,232 @@ Example style directions:
 - Modern lifestyle
 - Clean product advertising
 
-A selected product color is a visual instruction, not a verified statement that Apple sells that model in that color.
+Controls represent creative instructions. Do not present them as guaranteed generation parameters unless the native generation capability actually supports them.
 
-Do not expose a setting as a guaranteed model capability unless the native runtime actually supports it. Unsupported controls must be omitted or clearly treated as prompt guidance.
+# 7. INSTAGRAM IMAGE FORMAT
 
----
+Default composition:
 
-## 6. Instagram Output Requirements
-
-### Default format
-
-- Aspect ratio: **9:16 portrait**
-- Target dimensions: **1080 × 1920 px**
-- Intended placement: Instagram Stories and Reels; also usable as vertical promotional creative where appropriate.
-
-The 1080 × 1920 px dimensions are a target, not a guarantee. Do not upscale, crop, or distort an image and then claim it was natively generated at that resolution.
-
-### Composition
-
-- Place the Apple product as the primary focal point.
-- Use a strong vertical composition suitable for mobile viewing.
-- Maintain clear visual hierarchy and intentional negative space.
+- Portrait 9:16.
+- Target export: 1080 × 1920 px, only when supported by the generation capability.
+- Designed primarily for Instagram Stories and Reels.
+- Strong vertical composition and mobile-first visual hierarchy.
+- Product is the primary focal point.
+- Clean negative space and intentional placement.
 - Keep important visual content away from extreme edges.
-- Use premium, modern, polished commercial art direction.
-- Ensure the result remains legible and visually balanced on a phone screen.
+- Premium, modern, polished commercial art direction.
 
-### Text in generated images
+Do not falsely claim an image was generated at 1080 × 1920 px if the runtime returns another size. Do not silently upscale, crop, or distort and describe it as native output.
 
-- Prefer image-first creative with minimal or no embedded text.
-- Do not invent prices, discounts, promotional dates, store addresses, URLs, or product claims.
-- If the user supplies exact copy, preserve its wording as closely as the image model allows.
-- Do not claim generated typography is guaranteed to be accurate.
+Text in images:
 
----
+- Prefer image-first visuals with minimal or no embedded text.
+- Never invent marketing copy, price, discount, dates, URL, store address, or product claims.
+- If the user supplies exact copy, use it as faithfully as the generation capability allows.
+- Do not promise perfect typography or spelling in generated images.
 
-## 7. Native Image Generation — Critical Constraint
+# 8. GEMINI CANVAS NATIVE IMAGE GENERATION — CRITICAL
 
-Use only an image-generation capability that is genuinely available to the application through the native Gemini Canvas runtime.
+Use only image-generation functionality genuinely available through the current Gemini Canvas environment.
 
-Mandatory restrictions:
+Before implementing the Generate action:
 
-- Do not call Gemini Developer API, Google AI Studio API, Vertex AI API, or any third-party image-generation API.
-- Do not request, store, or expose an API key.
-- Do not add an external backend, server, proxy, database, Supabase service, or Edge Function.
-- Do not invent a Canvas SDK, package, endpoint, JavaScript method, or runtime interface.
-- Do not assume a feature available to Gemini during authoring is automatically callable from the generated application.
-- Do not simulate image generation with a static image, stock image, placeholder, or fabricated result.
-- Do not claim generation is unlimited or guaranteed free. Respect actual account access, quotas, and runtime restrictions.
+1. Inspect the actual Canvas-provided capabilities and available Gemini features.
+2. Determine whether native image generation can be invoked by the React application itself, or whether it is available only through a Canvas authoring/assistant workflow.
+3. Identify the real supported invocation mechanism and input/output contract, if one exists.
+4. Verify whether portrait ratio, output dimensions, image result access, download, and regeneration are supported.
+5. Implement only what is verifiably supported.
 
-### Runtime capability verification
+Strict prohibitions:
 
-Before implementing the generation action:
+- Do not invent a Gemini Canvas SDK, JavaScript global, function, method, package, endpoint, or API contract.
+- Do not assume that a capability available to the Canvas authoring assistant is automatically callable from application JavaScript.
+- Do not call Gemini Developer API, Google AI Studio API, Vertex AI API, or third-party image-generation APIs.
+- Do not request or store API keys, tokens, or credentials.
+- Do not add a backend, server, proxy, database, Supabase integration, or Edge Function.
+- Do not simulate generation with a placeholder, stock image, hardcoded image, or fabricated success state.
+- Do not claim unlimited or guaranteed-free generation. Respect actual account access, quotas, and runtime limitations.
 
-1. Inspect the actual Gemini Canvas runtime and its documented/available application capabilities.
-2. Confirm whether the application can invoke native image generation directly.
-3. Confirm the accepted input format and the returned image representation.
-4. Confirm whether aspect ratio, image dimensions, download, and session retention are supported.
-5. Implement only verified capabilities.
+**If no verified native image-generation interface is callable from the React application:**
 
-If the runtime does not expose a callable native image-generation capability:
+- Do not create a fake Generate Image button.
+- Do not pretend that a prompt submission is equivalent to image generation.
+- Do not display a placeholder as a generated image.
+- Explain clearly in the UI or implementation response that the current Canvas runtime does not expose a callable native image-generation interface to the app.
+- Keep the rest of the configuration UI functional where practical.
+- Do not switch to an external API or ask for credentials.
+- State what capability is missing and what remains unimplemented.
 
-- Do not implement a fake Generate action.
-- Clearly show that native image generation is unavailable in the current runtime.
-- Keep any independently functional product/concept/visual configuration usable if practical.
-- Do not switch to an external API or ask the user for credentials.
-- Report the exact capability limitation rather than implying the application is complete.
+The application must be honest about this boundary. A polished UI does not count as successful image generation.
 
----
+# 9. USER EXPERIENCE AND APPLICATION FLOW
 
-## 8. Prompt Construction
+Build a focused creative workspace with this flow:
 
-Build the image-generation instruction internally from the user's selections.
+## Step A — Select Product
 
-The internal instruction should combine:
+- Choose one Apple product family.
+- Optionally enter model/details.
+- Optionally select a visual color.
 
-1. Selected Apple product family.
-2. Optional model/details supplied by the user.
-3. Selected campaign concept.
-4. Product color, if selected.
-5. Background and environment.
-6. Lighting and camera direction.
-7. Composition and visual hierarchy.
-8. Premium commercial art direction.
-9. Vertical 9:16 composition requirement.
-10. Product accuracy and no-fabrication constraints.
+## Step B — Choose Campaign
 
-The application should produce concise, coherent image instructions. Avoid contradictory style directives and excessive prompt length.
+- Select one campaign concept.
+- Optionally enter a custom creative direction.
 
-Do not display the internal prompt as the primary output. Do not require the user to manually copy or paste it.
+## Step C — Configure Visual Direction
 
-Do not silently invent product facts or marketing copy to fill missing information.
+- Choose background/environment.
+- Choose lighting.
+- Choose composition.
+- Choose camera angle.
+- Choose mood/style.
 
----
+## Step D — Generate
 
-## 9. Main User Interface
-
-Create a focused, premium, responsive creative workspace.
-
-### Header
-
-- Application name: **Gemini Calendar**
-- Short descriptor: **Apple Campaign Image Studio**
-- Reset / New Creation action.
-
-### Product section
-
-- Product-family selector.
-- Optional model/details input.
-- Optional product color selector.
-
-### Campaign section
-
-- Campaign concept selector.
-- Optional custom concept input.
-
-### Visual direction section
-
-- Background / environment.
-- Lighting.
-- Composition.
-- Camera angle.
-- Visual mood / style.
-
-### Output section
-
-- Show the default 9:16 portrait ratio.
-- Show the target dimensions as 1080 × 1920 px only as a target.
-- Explain when a setting cannot be enforced by the runtime.
-
-### Generate action
-
-- Clear **Generate Image** action.
-- Validate required selections before generation.
-- Prevent duplicate submissions while a real generation request is running.
+- Validate required selections.
+- Trigger only a verified native generation capability.
+- Prevent duplicate requests while generation is actually in progress.
 - Show an honest loading state.
-- Disable generation and explain why when native capability is unavailable.
+- Preserve all selections if generation fails.
 
-### Result section
+## Step E — Preview and Actions
 
-- Display only the actual image returned by a successful native generation operation.
-- Do not show a sample or placeholder as a generated result.
-- Provide Download only when a real result and supported download behavior are available.
-- Provide Regenerate / Create Variation only when the runtime supports another genuine generation request.
+After a real successful generation:
+
+- Display the returned image prominently.
+- Provide Download only if the returned image and runtime support it.
+- Provide Regenerate / Create Variation only if another genuine generation request is supported.
 - Provide New Creation / Reset.
 
-The generated image is the main output. Do not add a prompt-result panel, prompt-copy workflow, or prompt-only mode.
+Do not show a generated-image preview until a real image result is returned.
 
----
+# 10. UI DESIGN DIRECTION
 
-## 10. Application States and Error Handling
+Create a premium, modern, minimalist, responsive interface.
 
-Handle at least these states:
+Visual direction:
 
-- Initial / empty workspace.
+- Editorial product-advertising aesthetic.
+- Neutral backgrounds and restrained accent colors.
+- Strong typography and clear hierarchy.
+- Carefully spaced controls and clear section grouping.
+- Product and campaign choices should be easy to scan.
+- The generated image should become the dominant element in the result state.
+- Responsive desktop and mobile layouts.
+- Avoid visual clutter, excessive decoration, and unnecessary configuration.
+
+Suggested interface structure:
+
+1. Header: Gemini Calendar + Apple Campaign Image Studio.
+2. Product selection.
+3. Campaign concept selection.
+4. Visual direction controls.
+5. Output format information (9:16; target dimensions clearly qualified).
+6. Generate action or honest capability-unavailable state.
+7. Result preview and supported actions.
+
+Use a cohesive design system for spacing, typography, surfaces, borders, and controls. Ensure all visible controls have real behavior.
+
+# 11. STATE, VALIDATION, AND ERROR HANDLING
+
+Handle the relevant states:
+
+- Initial workspace.
 - Product selected.
-- Campaign concept selected.
+- Campaign selected.
 - Ready to generate.
 - Required selection missing.
-- Native generation unavailable.
+- Native image generation unavailable.
 - Generating.
-- Generation successful.
-- Usage limit reached, if reported by runtime.
+- Generation succeeded.
 - Generation failed.
+- Usage limit reached, if reported by runtime.
 - Download unavailable.
-- Session result unavailable after reset or runtime loss.
+- Result lost after reset or runtime session loss.
 
-Error handling requirements:
+Requirements:
 
-- Use clear, actionable messages.
-- Preserve user selections after generation failure.
+- Use clear and actionable messages.
+- Preserve configuration after failure.
 - Do not fabricate progress percentages.
-- Do not add failed requests to generation history.
-- Do not display an image unless generation actually succeeded.
-- Do not claim a download succeeded unless the browser/runtime confirms the action.
+- Do not mark a request successful until a real image result is received.
+- Do not create fake generation history.
+- Do not show a fake preview.
+- Disable actions that cannot actually work and explain why.
+- Do not claim a download succeeded unless the browser/runtime confirms it.
+
+# 12. ACCESSIBILITY AND RESPONSIVENESS
+
+- Use semantic controls and accessible labels.
+- Support keyboard interaction.
+- Provide visible focus states.
+- Maintain sufficient contrast.
+- Use appropriate button states: enabled, disabled, loading.
+- Ensure the layout works on narrow mobile screens and desktop.
+- Avoid controls that depend only on color to communicate state.
+
+# 13. IMPLEMENTATION QUALITY
+
+Within the single React artifact:
+
+- Keep components and helper functions logically organized.
+- Use React state for interactive selections and application state.
+- Keep prompt construction internal and deterministic from user selections.
+- Keep native generation integration isolated behind a small adapter/function, but implement it only if the real interface is verified.
+- Handle asynchronous failures safely if the verified interface is asynchronous.
+- Avoid unnecessary dependencies and complexity.
+- Do not introduce mock generation in production UI.
+- Do not leave decorative or inert controls that appear functional.
+- Do not split code, styles, or assets into separate files.
+
+# 14. ACCEPTANCE CHECKLIST
+
+The application is complete only when all applicable items are verified in Gemini Canvas:
+
+- [ ] The output is one self-contained React application in one code artifact/file.
+- [ ] The app runs directly in Gemini Canvas preview.
+- [ ] No Vite/Next/CRA scaffold, package installation, build step, or separate source files are required.
+- [ ] App identity is Gemini Calendar — Apple Campaign Image Studio.
+- [ ] Product-family selection works.
+- [ ] Optional model/details input works.
+- [ ] Campaign concept selection works.
+- [ ] Visual direction controls work.
+- [ ] Default composition is portrait 9:16.
+- [ ] 1080 × 1920 px is described as a target only when supported.
+- [ ] Internal image instructions are built from the selections.
+- [ ] No prompt-copy or prompt-only result workflow is exposed.
+- [ ] Native image generation is invoked only through a verified Canvas-supported mechanism.
+- [ ] A preview appears only after a real successful image generation.
+- [ ] Download and regenerate work only when genuinely supported.
+- [ ] No image upload, reference image, or Image-to-Image exists.
+- [ ] No external image API, API key, backend, database, or Edge Function exists.
+- [ ] No unsupported product specifications or marketing claims are fabricated.
+- [ ] Errors and unsupported capabilities are communicated honestly.
+- [ ] The interface is responsive and accessible.
+- [ ] All visible controls have functional behavior.
+
+If native generation cannot be invoked from the app, mark that acceptance item as **blocked by runtime capability**, explain the evidence, and do not claim the application is fully complete.
+
+# 15. EXECUTION INSTRUCTIONS
+
+Now create the application directly in Gemini Canvas.
+
+Follow this order:
+
+1. Inspect the Canvas environment and identify the supported React/runtime constraints.
+2. Verify whether native image generation is callable from the application.
+3. Build the complete single-file React application.
+4. Implement only verified native generation and output capabilities.
+5. Run the app in Canvas preview.
+6. Test every visible control and each applicable application state.
+7. Verify mobile and desktop layouts.
+8. Report what works, what was tested, and any runtime-blocked feature.
+
+Do not respond with another requirement document or a multi-file repository project. Generate the actual single-file React application in Canvas.
+
+If a native image-generation call is not available to the app, finish the functional configuration UI and explicitly report the generation blocker. Never fake the image-generation workflow.
 
 ---
 
-## 11. Visual Design and Accessibility
-
-Design direction:
-
-- Premium, modern, minimalist.
-- Editorial product-advertising aesthetic.
-- Neutral surfaces with restrained accent colors.
-- Strong typography and clear hierarchy.
-- Product selection and visual configuration should be easy to scan.
-- Image preview should be the dominant visual area after generation.
-- Responsive desktop and mobile layouts.
-- Accessible labels, keyboard interaction, and visible focus states.
-- Clear disabled, loading, success, and error states.
-- Avoid clutter, excessive controls, and decorative elements that do not improve the workflow.
-
-All visible controls must have real behavior. Do not ship inert buttons or decorative controls that appear functional.
-
----
-
-## 12. Technical Architecture and Scope
-
-Use only the framework and application structure supported by Gemini Canvas.
-
-Keep responsibilities separated where the runtime permits:
-
-- Product and campaign selection state.
-- Visual configuration state.
-- Internal prompt construction.
-- Native image-generation adapter.
-- Generated-image result display.
-- Download behavior.
-- Error and capability state.
-
-Keep native Canvas integration isolated so that unverified APIs are not spread through the UI.
-
-Do not add:
-
-- External API clients or SDKs.
-- API key or secret management.
-- Backend or server routes.
-- Supabase, database, or Edge Function integrations.
-- Product catalog fetching.
-- User authentication.
-- Manual image upload or file picker.
-- Image URL input.
-- Image-to-Image or image-editing workflows.
-- Fake generation adapters or mock results presented as real output.
-
----
-
-## 13. Acceptance Criteria
-
-The V1 application is accepted only when:
-
-1. It runs interactively inside Gemini Canvas.
-2. Its purpose is Apple promotional image creation for Instagram App Store Malaysia.
-3. Users can select an Apple product family.
-4. Users can select a campaign concept.
-5. Users can configure supported visual directions.
-6. The default intended composition is portrait 9:16.
-7. 1080 × 1920 px is treated as a target and not falsely guaranteed.
-8. The application constructs image instructions internally.
-9. The application invokes only a verified native Gemini Canvas image-generation capability.
-10. The application displays only a real successfully generated image.
-11. The main result is an image, not a prompt.
-12. Download and regenerate actions work only when genuinely supported.
-13. No manual image upload, reference image, or Image-to-Image feature exists.
-14. No API key, external image API, backend, database, or Edge Function is required.
-15. Product specifications and marketing claims are not fabricated.
-16. Errors and runtime limitations are communicated honestly.
-17. The interface is responsive and accessible.
-18. All visible controls have functional behavior.
-
-If native image generation is not callable from the Canvas application runtime, acceptance criterion 9 is not met. Report the blocker; do not substitute another generation method.
-
----
-
-## 14. Implementation and Change-Control Instructions
-
-This document is the **Gemini Calendar Requirement Specification V1**.
-
-Before implementation:
-
-1. Audit the current repository and existing application files.
-2. Compare the repository state against this specification.
-3. Verify the native Gemini Canvas image-generation capability before coding the generation integration.
-4. Report conflicts, unsupported capabilities, and implementation risks.
-5. Present the implementation plan and wait for explicit user approval.
-
-After approval:
-
-1. Implement only the approved V1 scope.
-2. Do not expand scope or add external services.
-3. Verify the application in the actual Gemini Canvas runtime where possible.
-4. Test product selection, visual configuration, generation, result display, download, errors, and responsive behavior.
-5. Report verified results separately from unverified runtime assumptions.
-
-Do not implement application code, modify other repository files, add dependencies, or change external services before the user explicitly approves implementation.
-
----
-
-## 15. Final Instruction
-
-Build **Gemini Calendar — Apple Campaign Image Studio V1** directly for Gemini Canvas, following this specification.
-
-The user selects an Apple product and campaign direction, configures the visual treatment, and generates a vertical promotional image through a genuinely available native Gemini Canvas image-generation capability.
-
-The generated image is the primary and only result. The internal prompt is not presented as the deliverable.
-
-No uploads, Image-to-Image, API keys, external image APIs, backend, database, or Edge Functions.
-
-If native image generation is unavailable to the application runtime, stop the generation integration and report the limitation. Never fake a generated image or silently substitute an external service.
+**END OF GEMINI CALENDAR MASTER PROMPT V2**
